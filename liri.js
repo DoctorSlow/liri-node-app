@@ -1,3 +1,4 @@
+//setting up require functions for node.js packages
 require("dotenv").config();
 var request = require('request');
 var Spotify = require('node-spotify-api');
@@ -9,14 +10,16 @@ var keys = require('./keys.js');
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 
+//setting input variables and accounting for multi-word inputs
 var command = process.argv[2];
 var inputName = process.argv[3];
 var inputName = inputName.replace(' ', '+');
 
+//setting up switch to accommodate multiple commands
 switch (command) {
-    //     case "my-tweets":
-    //         myTweets();
-    //         break;
+    case "my-tweets":
+        myTweets();
+        break;
 
     case "spotify-this-song":
         spotifyThisSong();
@@ -26,24 +29,29 @@ switch (command) {
         movieThis();
         break;
 
-        //     case "do-what-it-says":
-        // doWhatItSays();
+    case "do-what-it-says":
+        doWhatItSays();
 }
 
+// `node liri.js my-tweets`
+// Show your last 20 tweets and when they were created at in your terminal/bash window.
 // function myTweets() {}
 
-// `node liri.js my-tweets`
-//    Show your last 20 tweets and when they were created at in your terminal/bash window.
 
+// function spotifyThisSong() {}
+// `node liri.js spotify-this-song '<song name here>'`
+// * If no song is provided then your program will default to "The Sign" by Ace of Base.
 function spotifyThisSong() {
     spotify.search({
         type: 'track',
-        query: inputName
+        query: inputName,
+        // limit: 5,
+        // offset: 5
     }, function (err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
-        console.log(data);
+        console.log(data.body);
         console.log("Artist: " + data.tracks.items[0].artists.name);
         console.log("Song: " + data.tracks.items[0].name);
         console.log("Preview link: " + data.tracks.items[0].preview_url);
@@ -51,10 +59,8 @@ function spotifyThisSong() {
     });
 }
 
-// function spotifyThisSong() {}
-// `node liri.js spotify-this-song '<song name here>'`
-//    * If no song is provided then your program will default to "The Sign" by Ace of Base.
-
+// `node liri.js movie-this '<movie name here>'`
+// * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
 function movieThis() {
     request("http://www.omdbapi.com/?t=" + inputName + "&y=&plot=short&apikey=trilogy", function (error, response, body) {
         if (!error && response.statusCode === 200) {
@@ -73,14 +79,13 @@ function movieThis() {
         }
     });
 }
-// `node liri.js movie-this '<movie name here>'`
-//    * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
 
-// function doWhatItSays() {}
+
 // `node liri.js do-what-it-says`
-//    * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.   
-//      * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.    
-//      * Feel free to change the text in that document to test out the feature for other commands.
+// * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.   
+// * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.    
+// * Feel free to change the text in that document to test out the feature for other commands.
+// function doWhatItSays() {}
 
 
 // ### BONUS
@@ -88,4 +93,4 @@ function movieThis() {
 // * Make sure you append each command you run to the `log.txt` file. 
 // * Do not overwrite your file each time you run a command.
 
-console.log(process.argv);
+// console.log(process.argv);
