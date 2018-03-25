@@ -45,8 +45,6 @@ function spotifyThisSong() {
     spotify.search({
         type: 'track',
         query: inputName,
-        // limit: 5,
-        // offset: 5
     }, function (err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
@@ -74,9 +72,7 @@ function movieThis() {
             console.log("Plot summary: " + JSON.parse(body).Plot);
             console.log("Starring: " + JSON.parse(body).Actors);
         };
-        if (inputName === undefined) {
-            var inputName = "Mr. Nobody";
-        }
+
     });
 }
 
