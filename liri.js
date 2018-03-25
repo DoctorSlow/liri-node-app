@@ -1,23 +1,23 @@
 require("dotenv").config();
 var request = require("request");
 
-// 9. Add the code required to import the `keys.js` file and store it in a variable.
-// * You should then be able to access your keys information like so
-// var spotify = new Spotify(keys.spotify);
+// codes required to import the Spotify & Twitter keys
+var spotify = new Spotify(keys.spotify);
 // var client = new Twitter(keys.twitter);
 
 var command = process.argv[2];
 var movieName = process.argv[3];
 var movieName = movieName.replace(' ', '+');
+var songName = songName.replace(' ', '+');
 
 switch (command) {
     //     case "my-tweets":
     //         myTweets();
     //         break;
 
-    //     case "spotify-this-song":
-    //         spotifyThisSong();
-    //         break;
+    case "spotify-this-song":
+        spotifyThisSong();
+        break;
 
     case "movie-this":
         movieThis();
@@ -32,13 +32,19 @@ switch (command) {
 // `node liri.js my-tweets`
 //    Show your last 20 tweets and when they were created at in your terminal/bash window.
 
+function spotifyThisSong() {
+    request("https://api.spotify.com/v1/searchq=" + songName + "&type=track", function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            console.log(request);
+            console.log("Artist: " + JSON.parse(body).artists);
+            console.log("Song: " + JSON.parse(body).name);
+            console.log("Preview link: " + JSON.parse(body).preview_url);
+            console.log("Album: " + JSON.parse(body).album);
+        }
+    })
+}
 // function spotifyThisSong() {}
 // `node liri.js spotify-this-song '<song name here>'`
-//    Show the following information about the song in your terminal/bash window
-//      * Artist(s)
-//      * The song's name
-//      * A preview link of the song from Spotify
-//      * The album that the song is from
 //    * If no song is provided then your program will default to "The Sign" by Ace of Base.
 
 function movieThis() {
