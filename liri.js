@@ -30,11 +30,19 @@ switchCase(command, inputName) {
             break;
 
         case "spotify-this-song":
-            spotifyThisSong(inputName);
+            if (inputName) {
+                spotifyThisSong(inputName)
+            } else {
+                spotifyThisSong("The Sign")
+            };
             break;
 
         case "movie-this":
-            movieThis(inputName);
+            if (inputName) {
+                movieThis(inputName)
+            } else {
+                movieThis("Mr. Nobody")
+            };
             break;
 
         case "do-what-it-says":
@@ -48,16 +56,22 @@ function myTweets() {
     var params = {
         screen_name: 'doctorslow',
         count: 20,
+        tweet_mode: 'extended',
     };
     client.get('statuses/user_timeline/', params, function (error, tweets, response) {
         if (!error) {
-            console.log(tweets[0].text);
-        }
+            for (i = 0; i < tweets.length; i++) {
+                console.log("     <---------------------------------------------------------->");
+                console.log(tweets[i].created_at);
+                console.log(tweets[i].full_text);
+                console.log("     <---------------------------------------------------------->");
+
+            };
+        };
     });
 }
+// let text = status["retweeted_status"]["full_text"];
 
-
-// function spotifyThisSong() {}
 // `node liri.js spotify-this-song '<song name here>'`
 // * If no song is provided then your program will default to "The Sign" by Ace of Base.
 function spotifyThisSong(inputName) {
@@ -68,10 +82,12 @@ function spotifyThisSong(inputName) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
+        console.log("     <---------------------------------------------------------->");
         console.log("Artist: " + data.tracks.items[0].artists[0].name);
+        console.log("Album: " + data.tracks.items[0].album.name);
         console.log("Song: " + data.tracks.items[0].name);
         console.log("Preview link: " + data.tracks.items[0].preview_url);
-        console.log("Album: " + data.tracks.items[0].album.name);
+        console.log("     <---------------------------------------------------------->");
     });
 }
 
@@ -81,7 +97,7 @@ function spotifyThisSong(inputName) {
 function movieThis() {
     request("http://www.omdbapi.com/?t=" + inputName + "&y=&plot=short&apikey=trilogy", function (error, response, body) {
         if (!error && response.statusCode === 200) {
-            // console.log(request);
+            console.log("     <---------------------------------------------------------->");
             console.log("Title: " + JSON.parse(body).Title);
             console.log("Released on: " + JSON.parse(body).Released);
             console.log("Rated: " + JSON.parse(body).Rated);
@@ -90,6 +106,7 @@ function movieThis() {
             console.log("Language(s): " + JSON.parse(body).Language);
             console.log("Plot summary: " + JSON.parse(body).Plot);
             console.log("Starring: " + JSON.parse(body).Actors);
+            console.log("     <---------------------------------------------------------->");
         };
 
     });
@@ -103,14 +120,12 @@ function doWhatItSays() {
         if (error) {
             return console.log(error);
         }
-        // We will then print the contents of data
+        // rint the contents of data to the console log
         console.log(data);
         // Then split it by commas (to make it more readable)
         var dataArr = data.split(",");
-        // We will then re-display the content as an array for later use.
-        // console.log(dataArr);
-        // console.log(dataArr[0]);
-
+        // pass the two split data in the array as the command and userInput in the switchCase function
+        //SwitchCase will run whichever command matches the argument in dataArr[0]
         switchCase(dataArr[0], dataArr[1]);
     });
 
