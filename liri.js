@@ -15,7 +15,15 @@ var client = new Twitter(keys.twitter);
 //setting input variables and accounting for multi-word inputs
 var command = process.argv[2];
 var inputName = process.argv[3];
-var inputName = inputName.replace(' ', '+');
+// var inputName = inputName.replace(' ', '+');
+
+console.log("     <---------------------------------------------------------->");
+console.log("Welcome. I'm Liri. I can assist you with information regarding film, music, twitter, and more.");
+console.log("Enter <node liri.js my-tweets> to see DoctorSlow's recent tweets.");
+console.log("Enter <node liri.js movie-this 'film name'> to inquire about any film.");
+console.log("Enter <node liri.js spotify-this-song 'song name'> to retrieve information about any song/artist.");
+console.log("     <---------------------------------------------------------->");
+
 
 if (command != undefined) {
     switchCase(command, inputName)
@@ -33,7 +41,8 @@ switchCase(command, inputName) {
             if (inputName) {
                 spotifyThisSong(inputName)
             } else {
-                spotifyThisSong("The Sign, Ace of Base")
+                spotifyThisSong("The Sign, Ace of Base");
+                console.log("Next time, try and choose your own song")
             };
             break;
 
@@ -41,7 +50,8 @@ switchCase(command, inputName) {
             if (inputName) {
                 movieThis(inputName)
             } else {
-                movieThis("Mr. Nobody")
+                movieThis("Mr. Nobody");
+                console.log("Next time, try and choose your own song")
             };
             break;
 
