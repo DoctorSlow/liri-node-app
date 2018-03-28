@@ -12,19 +12,20 @@ var keys = require('./keys.js');
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 
-//setting input variables and accounting for multi-word inputs
+//setting input variables
 var command = process.argv[2];
 var inputName = process.argv[3];
-// var inputName = inputName.replace(' ', '+');
 
+//Liri introduction
 console.log("     <---------------------------------------------------------->");
-console.log("Welcome. I'm Liri. I can assist you with information regarding film, music, twitter, and more.");
-console.log("Enter <node liri.js my-tweets> to see DoctorSlow's recent tweets.");
-console.log("Enter <node liri.js movie-this 'film name'> to inquire about any film.");
-console.log("Enter <node liri.js spotify-this-song 'song name'> to retrieve information about any song/artist.");
+console.log("** Welcome. I'm Liri. I can assist you with information regarding film, music, twitter, and more. **");
+console.log("     a) Enter <node liri.js my-tweets> to see DoctorSlow's recent tweets.");
+console.log("     b) Enter <node liri.js movie-this 'film name'> to inquire about any film.");
+console.log("     c) Enter <node liri.js spotify-this-song 'song name' or 'song name, artist name'> to retrieve information about any song/artist.");
+console.log("     d) Enter <node liri.js do-what-it-says> to read and execute whatever is entered in the 'random.txt' file.")
 console.log("     <---------------------------------------------------------->");
 
-
+//activating switch function
 if (command != undefined) {
     switchCase(command, inputName)
 };
@@ -42,7 +43,7 @@ switchCase(command, inputName) {
                 spotifyThisSong(inputName)
             } else {
                 spotifyThisSong("The Sign, Ace of Base");
-                console.log("Next time, try and choose your own song")
+                console.log("     ** Next time, try and choose your own song. **")
             };
             break;
 
@@ -51,18 +52,16 @@ switchCase(command, inputName) {
                 movieThis(inputName)
             } else {
                 movieThis("Mr. Nobody");
-                console.log("Next time, try and choose your own song")
+                console.log("     ** Next time, try and choose your own film. **")
             };
             break;
-
 
         case "do-what-it-says":
             doWhatItSays();
     };
 };
 
-// `node liri.js my-tweets`
-// Show your last 20 tweets and when they were created at in your terminal/bash window.
+// 'node liri.js my-tweets'
 function myTweets() {
     var params = {
         screen_name: 'doctorslow',
@@ -83,8 +82,8 @@ function myTweets() {
 }
 // let text = status["retweeted_status"]["full_text"];
 
-// `node liri.js spotify-this-song '<song name here>'`
-// * If no song is provided then your program will default to "The Sign" by Ace of Base.
+// 'node liri.js spotify-this-song "song name" or "song name, artist name"'
+// defaults to "The Sign, by Ace of Base"
 function spotifyThisSong(inputName) {
     spotify.search({
         type: 'track',
@@ -103,8 +102,8 @@ function spotifyThisSong(inputName) {
 }
 
 
-// `node liri.js movie-this '<movie name here>'`
-// * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
+// 'node liri.js movie-this "movie name"'
+// defaults to "Mr. Nobody"
 function movieThis(inputName) {
     request("http://www.omdbapi.com/?t=" + inputName + "&y=&plot=short&apikey=trilogy", function (error, response, body) {
         if (!error && response.statusCode === 200) {
@@ -124,7 +123,7 @@ function movieThis(inputName) {
 }
 
 
-// `node liri.js do-what-it-says`
+// 'node liri.js do-what-it-says to read random.txt file'
 function doWhatItSays() {
     fs.readFile("random.txt", "utf8", function (error, data) {
         // If the code experiences any errors it will log the error to the console.
