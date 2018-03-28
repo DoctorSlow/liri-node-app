@@ -15,7 +15,7 @@ var client = new Twitter(keys.twitter);
 //setting input variables and accounting for multi-word inputs
 var command = process.argv[2];
 var inputName = process.argv[3];
-// var inputName = inputName.replace(' ', '+');
+var inputName = inputName.replace(' ', '+');
 
 if (command != undefined) {
     switchCase(command, inputName)
@@ -33,7 +33,7 @@ switchCase(command, inputName) {
             if (inputName) {
                 spotifyThisSong(inputName)
             } else {
-                spotifyThisSong("The Sign")
+                spotifyThisSong("The Sign, Ace of Base")
             };
             break;
 
@@ -44,6 +44,7 @@ switchCase(command, inputName) {
                 movieThis("Mr. Nobody")
             };
             break;
+
 
         case "do-what-it-says":
             doWhatItSays();
@@ -94,7 +95,7 @@ function spotifyThisSong(inputName) {
 
 // `node liri.js movie-this '<movie name here>'`
 // * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-function movieThis() {
+function movieThis(inputName) {
     request("http://www.omdbapi.com/?t=" + inputName + "&y=&plot=short&apikey=trilogy", function (error, response, body) {
         if (!error && response.statusCode === 200) {
             console.log("     <---------------------------------------------------------->");
