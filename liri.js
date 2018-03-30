@@ -25,14 +25,9 @@ console.log("     c) Enter <node liri.js spotify-this-song 'song name' or 'song 
 console.log("     d) Enter <node liri.js do-what-it-says> to read and execute whatever is entered in the 'random.txt' file.")
 console.log("     <---------------------------------------------------------->");
 
-//activating switch function
-if (command != undefined) {
-    switchCase(command, inputName)
-};
 //setting up a switch-case statement to accommodate multiple commands
 //wrap in a function w/ command and input arguments
-function
-switchCase(command, inputName) {
+function switchCase(command, inputName) {
     switch (command) {
         case "my-tweets":
             myTweets();
@@ -140,6 +135,8 @@ function doWhatItSays() {
     });
 
 };
+
+switchCase(command, inputName);
 
 // ### BONUS
 // * In addition to logging the data to your terminal/bash window, output the data to a .txt file called `log.txt`.
