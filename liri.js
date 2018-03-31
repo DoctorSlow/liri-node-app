@@ -125,8 +125,9 @@ function doWhatItSays() {
         if (error) {
             return console.log(error);
         }
-        // rint the contents of data to the console log
+        // print the contents of data to the console log
         console.log(data);
+
         // Then split it by commas (to make it more readable)
         var dataArr = data.split(",");
         // pass the two split data in the array as the command and userInput in the switchCase function
@@ -142,5 +143,20 @@ switchCase(command, inputName);
 // * In addition to logging the data to your terminal/bash window, output the data to a .txt file called `log.txt`.
 // * Make sure you append each command you run to the `log.txt` file. 
 // * Do not overwrite your file each time you run a command.
+
+// If the "log" function is called...
+function log(command, inputName) {
+    // We will add the user command and input to the log.text file. If it doesn't exist, we'll automatically create it
+    fs.appendFile("log.txt", "\n<---------------------------------------------------------->\n" + command + " " + inputName + ".", function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+    // We will then print the logged input that was added to the log.txt file.
+    console.log("Logged " + command + " " + inputName + ".");
+};
+
+log(command, inputName);
+
 
 // console.log(process.argv);
