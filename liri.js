@@ -3,8 +3,12 @@ require("dotenv").config();
 var request = require('request');
 var Spotify = require('node-spotify-api');
 var Twitter = require('twitter');
+var colors = require('colors');
+var inquirer = require('inquirer');
+
 // fs is a core Node package for reading and writing files
 var fs = require("fs");
+
 // passing the env. keys to js for API access/functionality
 var keys = require('./keys.js');
 
@@ -16,14 +20,61 @@ var client = new Twitter(keys.twitter);
 var command = process.argv[2];
 var inputName = process.argv[3];
 
+//setting up the inquirer interface for interacting with Liri more easily
+inquirer.prompt(
+
+    {
+        type: "list",
+        name: "command",
+        message: "** Welcome. I'm Liri. I can assist you with information regarding film, music, Twitter-happenings, and more. \nChoose from the following to get started: \n",
+        choices: ["my-tweets", "spotify-this-song", "movie-this", "do-what-it-says"]
+    },
+
+).then(function (user) {
+
+    if (user.command == "my-tweets") {
+        myTweets();
+
+    } else if (user.command == "spotify-this-song") {
+        inquirer.prompt({
+            type: "input",
+            name: "search",
+            message: "Please tell me what song you're looking for:"
+        }, ).then(function (user) {
+            if (user.search === "") {
+                spotifyThisSong("The Sign, Ace of Base");
+            } else {
+                spotifyThisSong(user.search);
+            }
+        })
+
+    } else if (user.command == "movie-this") {
+        inquirer.prompt({
+            type: "input",
+            name: "search",
+            message: "Please tell me what movie you're looking for:"
+        }, ).then(function (user) {
+            if (user.search === "") {
+                movieThis("Mr. Nobody");
+            } else {
+                movieThis(user.search);
+            }
+        })
+
+    } else if (user.command == "do-what-it-says") {
+        doWhatItSays();
+    }
+
+});
+
 //Liri introduction
-console.log("     <---------------------------------------------------------->");
-console.log("** Welcome. I'm Liri. I can assist you with information regarding film, music, twitter, and more. **");
-console.log("     a) Enter <node liri.js my-tweets> to see DoctorSlow's recent tweets.");
-console.log("     b) Enter <node liri.js movie-this 'film name'> to inquire about any film.");
-console.log("     c) Enter <node liri.js spotify-this-song 'song name' or 'song name, artist name'> to retrieve information about any song/artist.");
-console.log("     d) Enter <node liri.js do-what-it-says> to read and execute whatever is entered in the 'random.txt' file.")
-console.log("     <---------------------------------------------------------->");
+// console.log("     <---------------------------------->");
+// console.log("** Welcome. I'm Liri. I can assist you with information regarding film, music, twitter, and more. **");
+// console.log("     a) Enter <node liri.js my-tweets> to see DoctorSlow's recent tweets.");
+// console.log("     b) Enter <node liri.js movie-this 'film name'> to inquire about any film.");
+// console.log("     c) Enter <node liri.js spotify-this-song 'song name' or 'song name, artist name'> to retrieve information about any song/artist.");
+// console.log("     d) Enter <node liri.js do-what-it-says> to read and execute whatever is entered in the 'random.txt' file.")
+// console.log("     <---------------------------------->");
 
 //setting up a switch-case statement to accommodate multiple commands
 //wrap in a function w/ command and input arguments
@@ -66,10 +117,11 @@ function myTweets() {
     client.get('statuses/user_timeline/', params, function (error, tweets, response) {
         if (!error) {
             for (i = 0; i < tweets.length; i++) {
-                console.log("     <---------------------------------------------------------->");
+                console.log("Here you go:");
+                console.log("     <---------------------------------->");
                 console.log(tweets[i].created_at);
                 console.log(tweets[i].full_text);
-                console.log("     <---------------------------------------------------------->");
+                console.log("     <---------------------------------->");
 
             };
         };
@@ -87,12 +139,14 @@ function spotifyThisSong(inputName) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
-        console.log("     <---------------------------------------------------------->");
+        console.log("Here you go:");
+        console.log("     <---------------------------------->");
         console.log("Artist: " + data.tracks.items[0].artists[0].name);
         console.log("Album: " + data.tracks.items[0].album.name);
         console.log("Song: " + data.tracks.items[0].name);
-        console.log("Preview link: " + data.tracks.items[0].preview_url);
-        console.log("     <---------------------------------------------------------->");
+        // console.log("Preview link: " + data.tracks.items[0].preview_url);
+        console.log("Preview link: " + data.tracks.items[0].external_urls.spotify);
+        console.log("     <---------------------------------->");
     });
 }
 
@@ -102,7 +156,8 @@ function spotifyThisSong(inputName) {
 function movieThis(inputName) {
     request("http://www.omdbapi.com/?t=" + inputName + "&y=&plot=short&apikey=trilogy", function (error, response, body) {
         if (!error && response.statusCode === 200) {
-            console.log("     <---------------------------------------------------------->");
+            console.log("Here you go:");
+            console.log("     <---------------------------------->");
             console.log("Title: " + JSON.parse(body).Title);
             console.log("Released on: " + JSON.parse(body).Released);
             console.log("Rated: " + JSON.parse(body).Rated);
@@ -111,12 +166,11 @@ function movieThis(inputName) {
             console.log("Language(s): " + JSON.parse(body).Language);
             console.log("Plot summary: " + JSON.parse(body).Plot);
             console.log("Starring: " + JSON.parse(body).Actors);
-            console.log("     <---------------------------------------------------------->");
+            console.log("     <---------------------------------->");
         };
 
     });
 }
-
 
 // 'node liri.js do-what-it-says to read random.txt file'
 function doWhatItSays() {
@@ -126,7 +180,9 @@ function doWhatItSays() {
             return console.log(error);
         }
         // print the contents of data to the console log
+        console.log("The file says:");
         console.log(data);
+        console.log("Allow me to do that for you. \n     *  *  *  *  *\n");
 
         // Then split it by commas (to make it more readable)
         var dataArr = data.split(",");
@@ -147,13 +203,13 @@ switchCase(command, inputName);
 // If the "log" function is called...
 function log(command, inputName) {
     // We will add the user command and input to the log.text file. If it doesn't exist, we'll automatically create it
-    fs.appendFile("log.txt", "\n<---------------------------------------------------------->\n" + command + " " + inputName + ".", function (err) {
+    fs.appendFile("log.txt", "\n<---------------------------------->\n" + command + " " + inputName + ".", function (err) {
         if (err) {
             return console.log(err);
         }
     });
     // We will then print the logged input that was added to the log.txt file.
-    console.log("Logged " + command + " " + inputName + ".");
+    // console.log("Logged " + command + ": " + inputName + ".");
 };
 
 log(command, inputName);
