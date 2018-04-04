@@ -26,7 +26,7 @@ inquirer.prompt(
     {
         type: "list",
         name: "command",
-        message: "** Welcome. I'm Liri. I can assist you with information regarding film, music, Twitter-happenings, and more. \nChoose from the following to get started: \n",
+        message: "     * * * * * \nWelcome. I'm Liri. \nI can assist you with information regarding film, music, Twitter-happenings, and more. \nChoose from the following to get started: \n".blue,
         choices: ["my-tweets", "spotify-this-song", "movie-this", "do-what-it-says"]
     },
 
@@ -39,7 +39,7 @@ inquirer.prompt(
         inquirer.prompt({
             type: "input",
             name: "search",
-            message: "Please tell me what song you're looking for:"
+            message: "Please tell me what song you're looking for:".blue
         }, ).then(function (user) {
             if (user.search === "") {
                 spotifyThisSong("The Sign, Ace of Base");
@@ -52,7 +52,7 @@ inquirer.prompt(
         inquirer.prompt({
             type: "input",
             name: "search",
-            message: "Please tell me what movie you're looking for:"
+            message: "Please tell me what movie you're looking for:".blue
         }, ).then(function (user) {
             if (user.search === "") {
                 movieThis("Mr. Nobody");
@@ -89,7 +89,7 @@ function switchCase(command, inputName) {
                 spotifyThisSong(inputName)
             } else {
                 spotifyThisSong("The Sign, Ace of Base");
-                console.log("     ** Next time, try and choose your own song. **")
+                console.log("     ** Next time, try and choose your own song. **".red)
             };
             break;
 
@@ -98,7 +98,7 @@ function switchCase(command, inputName) {
                 movieThis(inputName)
             } else {
                 movieThis("Mr. Nobody");
-                console.log("     ** Next time, try and choose your own film. **")
+                console.log("     ** Next time, try and choose your own film. **".red)
             };
             break;
 
@@ -117,7 +117,7 @@ function myTweets() {
     client.get('statuses/user_timeline/', params, function (error, tweets, response) {
         if (!error) {
             for (i = 0; i < tweets.length; i++) {
-                console.log("Here you go:");
+                console.log("Here you go:".blue);
                 console.log("     <---------------------------------->");
                 console.log(tweets[i].created_at);
                 console.log(tweets[i].full_text);
@@ -139,14 +139,14 @@ function spotifyThisSong(inputName) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
-        console.log("Here you go:");
-        console.log("     <---------------------------------->");
-        console.log("Artist: " + data.tracks.items[0].artists[0].name);
-        console.log("Album: " + data.tracks.items[0].album.name);
-        console.log("Song: " + data.tracks.items[0].name);
-        // console.log("Preview link: " + data.tracks.items[0].preview_url);
-        console.log("Preview link: " + data.tracks.items[0].external_urls.spotify);
-        console.log("     <---------------------------------->");
+        console.log("Here you go:".blue);
+        console.log("     <---------------------------------->".red);
+        console.log("Artist: " + data.tracks.items[0].artists[0].name.green);
+        console.log("Album: " + data.tracks.items[0].album.name.green);
+        console.log("Song: " + data.tracks.items[0].name.green);
+        // console.log("Preview link: " + data.tracks.items[0].preview_url.green);
+        console.log("Preview link: " + data.tracks.items[0].external_urls.spotify.green);
+        console.log("     <---------------------------------->".red);
     });
 }
 
@@ -156,17 +156,17 @@ function spotifyThisSong(inputName) {
 function movieThis(inputName) {
     request("http://www.omdbapi.com/?t=" + inputName + "&y=&plot=short&apikey=trilogy", function (error, response, body) {
         if (!error && response.statusCode === 200) {
-            console.log("Here you go:");
-            console.log("     <---------------------------------->");
-            console.log("Title: " + JSON.parse(body).Title);
-            console.log("Released on: " + JSON.parse(body).Released);
-            console.log("Rated: " + JSON.parse(body).Rated);
-            console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
-            console.log("Released in: " + JSON.parse(body).Country);
-            console.log("Language(s): " + JSON.parse(body).Language);
-            console.log("Plot summary: " + JSON.parse(body).Plot);
-            console.log("Starring: " + JSON.parse(body).Actors);
-            console.log("     <---------------------------------->");
+            console.log("Here you go:".blue);
+            console.log("     <---------------------------------->".red);
+            console.log("Title: " + JSON.parse(body).Title.yellow);
+            console.log("Released on: " + JSON.parse(body).Released.yellow);
+            console.log("Rated: " + JSON.parse(body).Rated.yellow);
+            console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value.yellow);
+            console.log("Released in: " + JSON.parse(body).Country.yellow);
+            console.log("Language(s): " + JSON.parse(body).Language.yellow);
+            console.log("Plot summary: " + JSON.parse(body).Plot.yellow);
+            console.log("Starring: " + JSON.parse(body).Actors.yellow);
+            console.log("     <---------------------------------->".red);
         };
 
     });
@@ -180,9 +180,9 @@ function doWhatItSays() {
             return console.log(error);
         }
         // print the contents of data to the console log
-        console.log("The file says:");
-        console.log(data);
-        console.log("Allow me to do that for you. \n     *  *  *  *  *\n");
+        console.log("The file says:".blue);
+        console.log(data.yellow);
+        console.log("Allow me to do that for you. \n     *  *  *  *  *\n".blue);
 
         // Then split it by commas (to make it more readable)
         var dataArr = data.split(",");
