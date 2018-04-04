@@ -5,10 +5,8 @@ var Spotify = require('node-spotify-api');
 var Twitter = require('twitter');
 var colors = require('colors');
 var inquirer = require('inquirer');
-
 // fs is a core Node package for reading and writing files
 var fs = require("fs");
-
 // passing the env. keys to js for API access/functionality
 var keys = require('./keys.js');
 
@@ -20,64 +18,100 @@ var client = new Twitter(keys.twitter);
 var command = process.argv[2];
 var inputName = process.argv[3];
 
-//setting up the inquirer interface for interacting with Liri more easily
-inquirer.prompt(
+//setting up the initial inquirer interface for interacting with Liri more easily
+function liriIntro() {
+    inquirer.prompt(
 
-    {
+        {
+            type: "list",
+            name: "command",
+            message: "    * * * * * \nWelcome. I'm Liri. \nI can assist you with information regarding film, music, Twitter-happenings, and more. \n     * * * * * \nChoose 'my-tweets' to see DoctorSlow's 20 most-recent tweets; 'movie-this' to inquire about any film; 'spotify-this-song' to retrieve information about any song/artist; and/or 'do-what-it-says' to have me execute whatever it says in the 'random.txt' file. \n     * * * * * ".blue,
+            choices: ["my-tweets", "spotify-this-song", "movie-this", "do-what-it-says"]
+        },
+
+    ).then(function (user) {
+
+        if (user.command == "my-tweets") {
+            myTweets();
+
+
+        } else if (user.command == "spotify-this-song") {
+            inquirer.prompt({
+                type: "input",
+                name: "inputName",
+                message: "Please tell me what song you're looking for:".blue
+            }, ).then(function (user) {
+                if (user.inputName === "") {
+                    spotifyThisSong("The Sign, Ace of Base");
+                } else {
+                    spotifyThisSong(user.inputName);
+                }
+            })
+
+        } else if (user.command == "movie-this") {
+            inquirer.prompt({
+                type: "input",
+                name: "inputName",
+                message: "Please tell me what movie you're looking for:".blue
+            }, ).then(function (user) {
+                if (user.inputName === "") {
+                    movieThis("Mr. Nobody");
+                } else {
+                    movieThis(user.inputName);
+                }
+            })
+
+        } else if (user.command == "do-what-it-says") {
+            doWhatItSays();
+        };
+    });
+};
+
+function moreHelp() {
+    inquirer.prompt({
         type: "list",
         name: "command",
-        message: "     * * * * * \nWelcome. I'm Liri. \nI can assist you with information regarding film, music, Twitter-happenings, and more. \nChoose from the following to get started: \n".blue,
+        message: "   * * * * * \nI hope you found the information you were looking for. Can I assist you with something else?\n     * * * * * \nChoose from the following to continue: \n     * * * * * \n".blue,
         choices: ["my-tweets", "spotify-this-song", "movie-this", "do-what-it-says"]
-    },
+    }, ).then(function (user) {
 
-).then(function (user) {
+        if (user.command == "my-tweets") {
+            myTweets();
 
-    if (user.command == "my-tweets") {
-        myTweets();
+        } else if (user.command == "spotify-this-song") {
+            inquirer.prompt({
+                type: "input",
+                name: "inputName",
+                message: "Please tell me what song you're looking for:".blue
+            }, ).then(function (user) {
+                if (user.inputName === "") {
+                    spotifyThisSong("The Sign, Ace of Base");
+                } else {
+                    spotifyThisSong(user.inputName);
+                }
+            })
 
-    } else if (user.command == "spotify-this-song") {
-        inquirer.prompt({
-            type: "input",
-            name: "search",
-            message: "Please tell me what song you're looking for:".blue
-        }, ).then(function (user) {
-            if (user.search === "") {
-                spotifyThisSong("The Sign, Ace of Base");
-            } else {
-                spotifyThisSong(user.search);
-            }
-        })
+        } else if (user.command == "movie-this") {
+            inquirer.prompt({
+                type: "input",
+                name: "inputName",
+                message: "Please tell me what movie you're looking for:".blue
+            }, ).then(function (user) {
+                if (user.inputName === "") {
+                    movieThis("Mr. Nobody");
+                } else {
+                    movieThis(user.inputName);
+                }
+            })
 
-    } else if (user.command == "movie-this") {
-        inquirer.prompt({
-            type: "input",
-            name: "search",
-            message: "Please tell me what movie you're looking for:".blue
-        }, ).then(function (user) {
-            if (user.search === "") {
-                movieThis("Mr. Nobody");
-            } else {
-                movieThis(user.search);
-            }
-        })
+        } else if (user.command == "do-what-it-says") {
+            doWhatItSays();
+        };
+    });
+}
 
-    } else if (user.command == "do-what-it-says") {
-        doWhatItSays();
-    }
-
-});
-
-//Liri introduction
-// console.log("     <---------------------------------->");
-// console.log("** Welcome. I'm Liri. I can assist you with information regarding film, music, twitter, and more. **");
-// console.log("     a) Enter <node liri.js my-tweets> to see DoctorSlow's recent tweets.");
-// console.log("     b) Enter <node liri.js movie-this 'film name'> to inquire about any film.");
-// console.log("     c) Enter <node liri.js spotify-this-song 'song name' or 'song name, artist name'> to retrieve information about any song/artist.");
-// console.log("     d) Enter <node liri.js do-what-it-says> to read and execute whatever is entered in the 'random.txt' file.")
-// console.log("     <---------------------------------->");
-
-//setting up a switch-case statement to accommodate multiple commands
-//wrap in a function w/ command and input arguments
+// setting up a switch-case statement to accommodate multiple commands
+// wrap in a function w / command and input arguments
 function switchCase(command, inputName) {
     switch (command) {
         case "my-tweets":
@@ -116,18 +150,18 @@ function myTweets() {
     };
     client.get('statuses/user_timeline/', params, function (error, tweets, response) {
         if (!error) {
+            // let text = status["retweeted_status"]["full_text"];
+            console.log("Here you go:".blue);
+            console.log("     <---------------------------------->".red);
             for (i = 0; i < tweets.length; i++) {
-                console.log("Here you go:".blue);
-                console.log("     <---------------------------------->");
-                console.log(tweets[i].created_at);
-                console.log(tweets[i].full_text);
-                console.log("     <---------------------------------->");
-
+                console.log("Date: ".green + tweets[i].created_at);
+                console.log("Tweet: ".green + tweets[i].full_text.yellow);
+                console.log("     <---------------------------------->".red);
             };
         };
+        moreHelp();
     });
-}
-// let text = status["retweeted_status"]["full_text"];
+};
 
 // 'node liri.js spotify-this-song "song name" or "song name, artist name"'
 // defaults to "The Sign, by Ace of Base"
@@ -141,15 +175,15 @@ function spotifyThisSong(inputName) {
         }
         console.log("Here you go:".blue);
         console.log("     <---------------------------------->".red);
-        console.log("Artist: " + data.tracks.items[0].artists[0].name.green);
-        console.log("Album: " + data.tracks.items[0].album.name.green);
-        console.log("Song: " + data.tracks.items[0].name.green);
-        // console.log("Preview link: " + data.tracks.items[0].preview_url.green);
-        console.log("Preview link: " + data.tracks.items[0].external_urls.spotify.green);
+        console.log("Artist: ".green + data.tracks.items[0].artists[0].name.yellow);
+        console.log("Album: ".green + data.tracks.items[0].album.name.yellow);
+        console.log("Song: ".green + data.tracks.items[0].name.yellow);
+        // console.log("Preview link: ".green + data.tracks.items[0].preview_url);
+        console.log("Spotify link: ".green + data.tracks.items[0].external_urls.spotify.yellow);
         console.log("     <---------------------------------->".red);
+        moreHelp();
     });
-}
-
+};
 
 // 'node liri.js movie-this "movie name"'
 // defaults to "Mr. Nobody"
@@ -158,17 +192,17 @@ function movieThis(inputName) {
         if (!error && response.statusCode === 200) {
             console.log("Here you go:".blue);
             console.log("     <---------------------------------->".red);
-            console.log("Title: " + JSON.parse(body).Title.yellow);
-            console.log("Released on: " + JSON.parse(body).Released.yellow);
-            console.log("Rated: " + JSON.parse(body).Rated.yellow);
-            console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value.yellow);
-            console.log("Released in: " + JSON.parse(body).Country.yellow);
-            console.log("Language(s): " + JSON.parse(body).Language.yellow);
-            console.log("Plot summary: " + JSON.parse(body).Plot.yellow);
-            console.log("Starring: " + JSON.parse(body).Actors.yellow);
+            console.log("Title: ".green + JSON.parse(body).Title.yellow);
+            console.log("Released on: ".green + JSON.parse(body).Released.yellow);
+            console.log("Rated: ".green + JSON.parse(body).Rated.yellow);
+            console.log("Rotten Tomatoes Rating: ".green + JSON.parse(body).Ratings[1].Value.yellow);
+            console.log("Released in: ".green + JSON.parse(body).Country.yellow);
+            console.log("Language(s): ".green + JSON.parse(body).Language.yellow);
+            console.log("Plot summary: ".green + JSON.parse(body).Plot.yellow);
+            console.log("Starring: ".green + JSON.parse(body).Actors.yellow);
             console.log("     <---------------------------------->".red);
         };
-
+        moreHelp();
     });
 }
 
@@ -180,9 +214,9 @@ function doWhatItSays() {
             return console.log(error);
         }
         // print the contents of data to the console log
-        console.log("The file says:".blue);
-        console.log(data.yellow);
-        console.log("Allow me to do that for you. \n     *  *  *  *  *\n".blue);
+        console.log("The file says:\n".blue);
+        console.log(data.inverse);
+        console.log("\nAllow me to do that for you.\n     *  *  *  *  *".blue);
 
         // Then split it by commas (to make it more readable)
         var dataArr = data.split(",");
@@ -193,6 +227,7 @@ function doWhatItSays() {
 
 };
 
+liriIntro();
 switchCase(command, inputName);
 
 // ### BONUS
@@ -212,7 +247,4 @@ function log(command, inputName) {
     // console.log("Logged " + command + ": " + inputName + ".");
 };
 
-log(command, inputName);
-
-
-// console.log(process.argv);
+log();
